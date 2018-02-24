@@ -8,7 +8,7 @@ import router from './router';
 import { store } from './store';
 import VeeValidate from 'vee-validate';
 import AsyncComputed from 'vue-async-computed';
-import initfb from '@/initfb';
+import initfb from '@/firebase/initfb';
 import './components/Shared';
 import './filters';
 
