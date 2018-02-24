@@ -1,0 +1,5 @@
+/* AlertDialog Component */
+.dialog__alert .list__tile {
+    height: 30px;
+    padding: 0 8px;
+}
