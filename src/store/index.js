@@ -36,6 +36,9 @@ export const store = new Vuex.Store({
 			if (payload.date) {
 				meetup.date = payload.date;
 			}
+			if (payload.imageUrl) {
+				meetup.imageUrl = payload.imageUrl;
+			}
 		},
 		setUser(state, payload) {
 			state.user = payload;
@@ -150,6 +153,41 @@ export const store = new Vuex.Store({
 				.then(() => {
 					commit('setLoading', false);
 					commit('updateMeetup', payload);
+				})
+				.catch(error => {
+					console.log(error);
+					commit('setLoading', false);
+				});
+		},
+		updateMeetupImage({ commit }, payload) {
+			commit('setLoading', true);
+
+			if (!payload.image) {
+				return false;
+			}
+			const filename = payload.image.name;
+			const ext = filename.slice(filename.lastIndexOf('.'));
+			let imageUrl;
+			var d = new Date();
+			var unixTime = d.getTime();
+
+			firebase
+				.storage()
+				.ref('meetups/' + payload.id + '_' + unixTime + ext)
+				.put(payload.image)
+				.then(fileData => {
+					var imageUrl = fileData.metadata.downloadURLs[0];
+					return firebase
+						.database()
+						.ref('meetups')
+						.child(payload.id)
+						.update({ imageUrl: imageUrl });
+				})
+				.then(() => {
+					commit('setLoading', false);
+					commit('updateMeetup', {
+						imageUrl: imageUrl
+					});
 				})
 				.catch(error => {
 					console.log(error);

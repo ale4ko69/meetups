@@ -22,7 +22,23 @@
                 <v-card-media
                     :src="meetup.imageUrl"
                     height="400px"
-                ></v-card-media>
+                    @mouseover="showButtonUpload"
+                    @mouseout="uploadButton = false"
+                >
+                <template v-if="uploadButton">
+                    <v-btn
+                    @click.native.stop="openDateDialog('image')"
+                    >
+                    <v-icon left>image</v-icon>
+                    Change Image</v-btn>
+                    <app-edit-meetup-date-dialog
+                            v-if="editDateDialog"
+                            @closeMeetupDateDialog="closeMeetupDateDialog"
+                            :mode="modeDateDialog"
+                            :meetup="meetup">
+                    </app-edit-meetup-date-dialog>
+                </template>
+                </v-card-media>
                 <v-card-text>
                     <v-list>
                         <template v-if="userIsCreator">
@@ -89,7 +105,8 @@ export default {
 	data() {
 		return {
 			editDateDialog: false,
-			modeDateDialog: null
+            modeDateDialog: null,
+            uploadButton: false
 		}
 	},
 	computed: {
@@ -101,7 +118,7 @@ export default {
 				this.$store.getters.user !== null &&
 				this.$store.getters.user !== undefined
 			);
-		},
+        },
 		userIsCreator() {
 			if (!this.userIsAuthenticated) {
 				return false;
@@ -121,7 +138,17 @@ export default {
 		closeMeetupDateDialog(arg) {
 			this.editDateDialog = false;
 			this.modeDateDialog = null;
-		}
+        },
+        showButtonUpload(){
+            
+            if(!this.userIsCreator){
+                this.uploadButton = false;
+                return;
+            } 
+
+            this.uploadButton = true;
+
+        }
 	}
 }
 </script>

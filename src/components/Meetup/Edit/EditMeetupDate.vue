@@ -10,6 +10,7 @@
                     <v-card-text>
                         <v-layout row>
                             <v-flex xs12>
+								<!-- Date Picker Component-->
                                 <v-date-picker
                                 v-model="editableDate"
                                 style="width:100%"
@@ -20,6 +21,7 @@
                                 >
                                 </v-date-picker>
 
+								<!-- Time Picker Component-->
                                 <v-time-picker
                                 style="width:100%" 
                                 color="green lighten-1"
@@ -28,6 +30,37 @@
                                 scrollable
                                 format="24hr">
                                 </v-time-picker>
+
+								<!-- Image Picker Component-->
+								<template
+								v-model="editableImage"
+                                v-if="mode == 'image'" 
+								>
+								<v-layout row>
+									<v-flex xs12 text-xs-center>
+									<v-btn
+										@click.native="onPickFile"
+										color="blue-grey"
+										class="white--text"
+										raised
+									>
+										Select New Image
+									<v-icon right dark>cloud_upload</v-icon>
+									</v-btn>           
+									<input 
+									type="file" 
+									ref="fileInput" 
+									@change="onFilePiked"
+									style="display:none;" 
+									accept="image/*">
+									</v-flex>
+								</v-layout>   
+								<v-layout row mt-3 mb-1 v-if="imageUrl">
+									<v-flex xs12 text-xs-center>
+									<img :src="imageUrl" alt="" height="150" />
+									</v-flex>
+								</v-layout>									
+								</template>								
                             </v-flex>
                         </v-layout>                        
                     </v-card-text>
@@ -45,6 +78,12 @@
             </v-layout>
         </v-container>
       </v-card>
+	    <app-alert-dialog 
+			v-if="vShow"
+			:dlgTitle="dlgTitle"
+			:dlgMessages="dlgMessages" 
+			@closeAlertDialog="closeAlertDialog">
+		</app-alert-dialog>
     </v-dialog>
 </template>
 
@@ -55,14 +94,18 @@ export default {
 	data() {
 		return {
 			editableDate: null,
-			editableTime: null
+			editableTime: null,
+			image: null,
+			imageUrl: '',
+			dlgTitle: '',
+			dlgMessages: null
 		}
 	},
 	methods: {
 		onClose() {
-            //alert(this.zindex);
+			//alert(this.zindex);
 			this.$emit('closeMeetupDateDialog', false)
-			this.editableDate = null
+			this.clearData()
 		},
 		onSaveChanges() {
 			const newDate = new Date(this.meetup.date)
@@ -84,33 +127,73 @@ export default {
 				newDate.setHours(hours)
 				newDate.setMinutes(minutes)
 			}
-			/** Save into Database */
-			this.$store.dispatch('updateMeetupData', {
-				id: this.meetup.id,
-				date: newDate
-			})
+
+			/** Save Date into Database */
+			if (this.mode == 'time' || this.mode == 'date') {
+				this.$store.dispatch('updateMeetupData', {
+					id: this.meetup.id,
+					date: newDate
+				})
+			}
+
+			if (this.mode == 'image') {
+				this.$store.dispatch('updateMeetupImage', {
+					id: this.meetup.id,
+					image: this.image
+				})
+			}
+
 			/** Up event for close dialog */
 			this.$emit('closeMeetupDateDialog', false)
+			this.clearData()
+		},
+		clearData() {
 			this.editableDate = null
+			this.editableTime = null
+			this.image = null
+			this.imageUrl = ''
+		},
+		onPickFile() {
+			this.$refs.fileInput.click()
+		},
+		onFilePiked(event) {
+			const files = event.target.files
+			let filename = files[0].name
+			if (filename.lastIndexOf('.') <= 0) {
+				this.dlgTitle = 'Upload Image'
+				this.dlgMessages = ['Please add a valid Image File']
+			}
+
+			const fileReader = new FileReader()
+			fileReader.addEventListener('load', () => {
+				this.imageUrl = fileReader.result
+			})
+
+			fileReader.readAsDataURL(files[0])
+			this.image = files[0]
 		}
-    },
+	},
 	computed: {
 		zindex() {
-			var dialogs = document.getElementsByClassName('dialog__content__active');
-			var zIndexMax = 0;
+			var dialogs = document.getElementsByClassName('dialog__content__active')
+			var zIndexMax = 0
 
 			for (let i = 0; i < dialogs.length; i++) {
-				let item = dialogs[i];
+				let item = dialogs[i]
 				if (item.style.zIndex > zIndexMax) {
 					zIndexMax = item.style.zIndex
 				}
 			}
-			return zIndexMax;
-		}
+			return zIndexMax
+		},
+		vShow() {
+			return this.dlgMessages ? true : false;
+		},
 	},
 	created() {
-		this.editableDate = this.$moment(this.meetup.date).format('YYYY-MM-DD');
-		this.editableTime = this.$moment(this.meetup.date).format('HH:mm');
+		this.editableDate = this.$moment(this.meetup.date).format('YYYY-MM-DD')
+		this.editableTime = this.$moment(this.meetup.date).format('HH:mm')
+		this.imageUrl = this.meetup.imageUrl
 	}
 }
 </script>
