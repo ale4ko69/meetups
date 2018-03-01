@@ -109,16 +109,15 @@ export default {
 	},
 	methods: {
 		onSignin() {
-			var self = this
-
+			var component = this;
 			this.$validator.validateAll().then(() => {
-				if (!self.vverrors.any()) {
-					self.$store.dispatch('signUserIn', {
-						email: self.email,
-						password: self.password
+				if (!component.vverrors.any()) {
+					component.$store.dispatch('signUserIn', {
+						email: component.email,
+						password: component.password
 					})
 				} else {
-					self.dlgMessages = self.vverrors.all();
+					component.dlgMessages = component.vverrors.all();
 				}
 			});
 		},

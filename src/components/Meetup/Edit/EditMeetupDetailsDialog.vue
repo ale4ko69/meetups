@@ -1,5 +1,5 @@
 <template>
-    <v-dialog persistent max-width="500" v-model="editDialog">
+    <v-dialog persistent max-width="500" @keydown.esc="onClose" v-model="editDialog">
         <v-btn fab accent slot="activator">
             <v-icon>edit</v-icon>
         </v-btn>
@@ -84,15 +84,15 @@ export default {
 			this.editedDescription = this.meetup.description;
 		},
 		onSaveChanges() {
-			var self = this;
+			var component = this;
 			this.$validator.validateAll().then(() => {
-				if (!self.vverrors.any()) {
-					self.editDialog = false;
-					self.$store.dispatch('updateMeetupData', {
-						id: self.meetup.id,
-                        title: self.editedTitle,
-                        location: self.editedLocation,
-						description: self.editedDescription
+				if (!component.vverrors.any()) {
+					component.editDialog = false;
+					component.$store.dispatch('updateMeetupData', {
+						id: component.meetup.id,
+                        title: component.editedTitle,
+                        location: component.editedLocation,
+						description: component.editedDescription
 					})
 				} else {
 					return false;

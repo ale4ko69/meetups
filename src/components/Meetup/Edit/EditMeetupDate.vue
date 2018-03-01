@@ -1,5 +1,5 @@
 <template>
-    <v-dialog persistent max-width="350" @keydown.native.esc="onClose" :value="true">
+    <v-dialog persistent max-width="350" @keydown.esc="onClose" :value="true">
       <v-card>
         <v-toolbar class="info">
             <v-toolbar-title class="white--text">Edit Meetup {{mode | capitalize}}</v-toolbar-title>
@@ -28,7 +28,6 @@
                                 scrollable
                                 format="24hr">
                                 </v-time-picker>
-
                             </v-flex>
                         </v-layout>                        
                     </v-card-text>
@@ -57,46 +56,61 @@ export default {
 		return {
 			editableDate: null,
 			editableTime: null
-		};
+		}
 	},
 	methods: {
 		onClose() {
-			this.$emit('closeMeetupDateDialog', false);
-			this.editableDate = null;
+            //alert(this.zindex);
+			this.$emit('closeMeetupDateDialog', false)
+			this.editableDate = null
 		},
 		onSaveChanges() {
-			const newDate = new Date(this.meetup.date);
+			const newDate = new Date(this.meetup.date)
 
 			if (this.mode == 'date') {
-				const newDay = new Date(this.editableDate).getUTCDate();
-				const newMonth = new Date(this.editableDate).getUTCMonth();
-				const newYear = new Date(this.editableDate).getUTCFullYear();
+				const newDay = new Date(this.editableDate).getUTCDate()
+				const newMonth = new Date(this.editableDate).getUTCMonth()
+				const newYear = new Date(this.editableDate).getUTCFullYear()
 
-				newDate.setUTCDate(newDay);
-				newDate.setUTCMonth(newMonth);
-				newDate.setUTCFullYear(newYear);
+				newDate.setUTCDate(newDay)
+				newDate.setUTCMonth(newMonth)
+				newDate.setUTCFullYear(newYear)
 			}
 
 			if (this.mode == 'time') {
-				const hours = this.editableTime.match(/^(\d+)/)[1];
-				const minutes = this.editableTime.match(/:(\d+)/)[1];
+				const hours = this.editableTime.match(/^(\d+)/)[1]
+				const minutes = this.editableTime.match(/:(\d+)/)[1]
 
-				newDate.setHours(hours);
-				newDate.setMinutes(minutes);
+				newDate.setHours(hours)
+				newDate.setMinutes(minutes)
 			}
 			/** Save into Database */
 			this.$store.dispatch('updateMeetupData', {
 				id: this.meetup.id,
 				date: newDate
-			});
+			})
 			/** Up event for close dialog */
-			this.$emit('closeMeetupDateDialog', false);
-			this.editableDate = null;
+			this.$emit('closeMeetupDateDialog', false)
+			this.editableDate = null
+		}
+    },
+	computed: {
+		zindex() {
+			var dialogs = document.getElementsByClassName('dialog__content__active');
+			var zIndexMax = 0;
+
+			for (let i = 0; i < dialogs.length; i++) {
+				let item = dialogs[i];
+				if (item.style.zIndex > zIndexMax) {
+					zIndexMax = item.style.zIndex
+				}
+			}
+			return zIndexMax;
 		}
 	},
 	created() {
 		this.editableDate = this.$moment(this.meetup.date).format('YYYY-MM-DD');
 		this.editableTime = this.$moment(this.meetup.date).format('HH:mm');
 	}
-};
+}
 </script>

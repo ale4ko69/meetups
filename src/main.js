@@ -33,6 +33,19 @@ Vue.use(AsyncComputed);
 
 Vue.config.productionTip = false;
 
+/*
+ * By extending the Vue prototype with a new '$bus' property
+ * we can easily access our global event bus from any child component.
+ */
+Object.defineProperty(Vue.prototype, '$bus', {
+	get() {
+		return this.$root.bus;
+	}
+});
+
+// This empty Vue model will serve as our event bus.
+var bus = new Vue({});
+
 /* eslint-disable no-new */
 new Vue({
 	el: '#app',
@@ -40,6 +53,9 @@ new Vue({
 	store,
 	components: { App },
 	template: '<App/>',
+	data: {
+		bus: bus
+	},
 	created() {
 		firebase.initializeApp(initfb);
 		firebase.auth().onAuthStateChanged(user => {
@@ -50,3 +66,19 @@ new Vue({
 		this.$store.dispatch('loadMeetups');
 	}
 });
+
+/**
+ *  // Register event listener
+	this.$bus.$on('specialEvent', event => {
+		this.msg = event.msg;
+		alert(event.alert);
+		console.log(event);
+	});
+
+	// emit the event and pass with it an object of "event data".
+	this.$bus.$emit('specialEvent', {
+		msg: 'This message came from the event.',
+		alert: 'Alert! Alert! Alert!'
+	});
+
+ */

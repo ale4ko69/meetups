@@ -113,17 +113,16 @@ export default {
 	},
 	methods: {
 		onSignup() {
-			var self = this
-
+			var component = this;
 			this.$validator.validateAll().then(() => {
-				if (!self.vverrors.any()) {
+				if (!component.vverrors.any()) {
 					//alert('Form Submitted!');
 					this.$store.dispatch('signUserUp', {
-						email: self.email,
-						password: self.password
+						email: component.email,
+						password: component.password
 					})
 				} else {
-					self.dlgMessages = self.vverrors.all();
+					component.dlgMessages = component.vverrors.all();
 				}
 			})
 		},

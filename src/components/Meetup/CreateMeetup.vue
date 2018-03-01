@@ -164,41 +164,41 @@ export default {
 	},
 	methods: {
 		onCreateMeetup() {
-			var self = this
+			var component = this;
 			this.$validator.validateAll().then(() => {
-				if (!self.vverrors.any() && self.image) {
+				if (!component.vverrors.any() && component.image) {
 					const meetupDate = {
-						title: self.title,
-						location: self.location,
-						// imageUrl: self.imageUrl,
-						image: self.image,
-						description: self.description,
-						// id: self.$moment(new Date()).unix(),
-						date: self.submittableDateTime
+						title: component.title,
+						location: component.location,
+						// imageUrl: component.imageUrl,
+						image: component.image,
+						description: component.description,
+						// id: component.$moment(new Date()).unix(),
+						date: component.submittableDateTime
 					}
-					self.$store.dispatch('createMeetup', meetupDate);
-					self.$router.push('/meetups');
+					component.$store.dispatch('createMeetup', meetupDate);
+					component.$router.push('/meetups');
 				} else {
           var imgErrors = [];
           var vvErrors  = [];
           var dlgTitle = '';
           var dlgMessages = [];
 
-          if (!self.image) {
+          if (!component.image) {
             dlgTitle = 'Upload Image';
             imgErrors.push('Please add a valid Image File');
           }
 
-          if(self.vverrors.any()){
+          if(component.vverrors.any()){
             dlgTitle = 'Form Errors';
-            vvErrors = self.vverrors.all();
+            vvErrors = component.vverrors.all();
             imgErrors.concat(vvErrors);
           }
 
           dlgMessages = imgErrors.concat(vvErrors);
 
-          self.dlgTitle = dlgTitle;
-				  self.dlgMessages = dlgMessages;
+          component.dlgTitle = dlgTitle;
+				  component.dlgMessages = dlgMessages;
 					return false;
 				}
 			});
