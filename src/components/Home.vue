@@ -27,12 +27,14 @@
         <template v-if="!loading">
         <v-layout row wrap>  
             <v-flex xs12 md8 offset-md2>
-                <v-carousel style="cursor:pointer;">
+                <v-carousel>
                     <v-carousel-item 
                     v-for="meetup in meetups" 
                     v-bind:src="meetup.imageUrl" 
                     :key="meetup.id"
-                    @click="onLoadMeetup(meetup.id)">
+                    style="cursor:pointer;" 
+                    @click.native="onLoadMeetup(meetup.id)" 
+                    >
                         <div class="title text-xs-center">
                             {{meetup.title}}
                         </div>

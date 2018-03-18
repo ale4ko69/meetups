@@ -71,11 +71,14 @@
       </v-toolbar>
 
       <v-content>
-        <router-view/>
+        <v-slide-x-reverse-transition>
+            <router-view/>
+        </v-slide-x-reverse-transition>
+        
       </v-content>
 
       <v-footer app>
-        <span>&copy; {{nowDate | moment("YYYY")}}</span>
+        <div class="ml-3">&copy; {{nowDate | moment("YYYY")}}</div>
       </v-footer>
   </v-app>
 </template>
@@ -142,7 +145,10 @@ export default {
 	methods: {
 		onLogout() {
 			this.$store.dispatch('logout');
-		}
+    },
+    handleDrop(){
+      console.log("Dropped")
+    }
 	}
 }
 </script>

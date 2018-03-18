@@ -165,18 +165,15 @@ export const store = new Vuex.Store({
 			if (!payload.image) {
 				return false;
 			}
-			const filename = payload.image.name;
-			const ext = filename.slice(filename.lastIndexOf('.'));
+			const filename =  payload.id + '.jpg';
 			let imageUrl;
-			var d = new Date();
-			var unixTime = d.getTime();
 
 			firebase
 				.storage()
-				.ref('meetups/' + payload.id + '_' + unixTime + ext)
+				.ref('meetups/' + filename)
 				.put(payload.image)
 				.then(fileData => {
-					var imageUrl = fileData.metadata.downloadURLs[0];
+					imageUrl = fileData.metadata.downloadURLs[0];
 					return firebase
 						.database()
 						.ref('meetups')
@@ -186,7 +183,8 @@ export const store = new Vuex.Store({
 				.then(() => {
 					commit('setLoading', false);
 					commit('updateMeetup', {
-						imageUrl: imageUrl
+						imageUrl: imageUrl,
+						id: payload.id
 					});
 				})
 				.catch(error => {
@@ -258,7 +256,9 @@ export const store = new Vuex.Store({
 			});
 		},
 		featuredMeetups(state, getters) {
-			return getters.loadedMeetups.slice(0, 5);
+			return state.loadedMeetups.sort((meetupA, meetupB) => {
+				return meetupA.date > meetupB.date;
+			}).slice(0, 5);
 		},
 		loadedMeetup(state) {
 			return meetupId => {

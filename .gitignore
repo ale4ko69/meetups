@@ -14,3 +14,4 @@ yarn-error.log*
 *.sln
 src/firebase/initfb.js
 *.db
+src/firebase/initfb.js

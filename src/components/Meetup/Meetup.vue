@@ -16,7 +16,7 @@
                    <h3 class="primary--text">{{meetup.title | uppercase}}</h3> 
                    <template v-if="userIsCreator">
                         <v-spacer></v-spacer>
-                        <app-edit-meetup-details-dialog :meetup="meetup"></app-edit-meetup-details-dialog>
+                        <app-edit-meetup-details :meetup="meetup"></app-edit-meetup-details>
                    </template>
                 </v-card-title>
                 <v-card-media
@@ -31,12 +31,12 @@
                     >
                     <v-icon left>image</v-icon>
                     Change Image</v-btn>
-                    <app-edit-meetup-date-dialog
-                            v-if="editDateDialog"
+                    <app-edit-meetup-other
+                            v-if="dialogState"
                             @closeMeetupDateDialog="closeMeetupDateDialog"
                             :mode="modeDateDialog"
                             :meetup="meetup">
-                    </app-edit-meetup-date-dialog>
+                    </app-edit-meetup-other>
                 </template>
                 </v-card-media>
                 <v-card-text>
@@ -62,13 +62,12 @@
                                 </v-list-tile-content>
                             </v-list-tile>
 
-                            <app-edit-meetup-date-dialog
-                            v-if="editDateDialog"
+                            <app-edit-meetup-other
+                            v-if="dialogState"
                             @closeMeetupDateDialog="closeMeetupDateDialog"
                             :mode="modeDateDialog"
                             :meetup="meetup">
-                            </app-edit-meetup-date-dialog>  
-
+                            </app-edit-meetup-other> 
 
                         </template>  
                         <v-list-tile v-else>
@@ -100,55 +99,98 @@
 </template>
 
 <script>
+import EditMeetupDetailsDialog from "@/components/Meetup/Edit/EditMeetupDetailsDialog";
+import EditMeetupDateDialog from "@/components/Meetup/Edit/EditMeetupDate";
+
 export default {
-	props: ['id'],
-	data() {
-		return {
-			editDateDialog: false,
-            modeDateDialog: null,
-            uploadButton: false
-		}
-	},
-	computed: {
-		meetup() {
-			return this.$store.getters.loadedMeetup(this.id);
-		},
-		userIsAuthenticated() {
-			return (
-				this.$store.getters.user !== null &&
-				this.$store.getters.user !== undefined
-			);
-        },
-		userIsCreator() {
-			if (!this.userIsAuthenticated) {
-				return false;
-			}
+  props: ["id"],
+  data() {
+    return {
+      dialogs: {
+        editDateDialog: false,
+        editTimeDialog: false,
+        editImageDialog: false,
+        editDetailsDialog: false
+      },
+      modeDateDialog: null,
+      uploadButton: false
+    };
+  },
+  components: {
+    appEditMeetupDetails: EditMeetupDetailsDialog,
+    appEditMeetupOther: EditMeetupDateDialog
+  },
+  computed: {
+    meetup() {
+      return this.$store.getters.loadedMeetup(this.id);
+    },
+    userIsAuthenticated() {
+      return (
+        this.$store.getters.user !== null &&
+        this.$store.getters.user !== undefined
+      );
+    },
+    userIsCreator() {
+      if (!this.userIsAuthenticated) {
+        return false;
+      }
 
-			return this.$store.getters.user.id === this.meetup.creatorId;
-		},
-		loading() {
-			return this.$store.getters.loading;
-		}
-	},
-	methods: {
-		openDateDialog(mode) {
-			this.modeDateDialog = mode;
-			this.editDateDialog = true;
-		},
-		closeMeetupDateDialog(arg) {
-			this.editDateDialog = false;
-			this.modeDateDialog = null;
-        },
-        showButtonUpload(){
-            
-            if(!this.userIsCreator){
-                this.uploadButton = false;
-                return;
-            } 
-
-            this.uploadButton = true;
-
-        }
-	}
-}
+      return this.$store.getters.user.id === this.meetup.creatorId;
+    },
+    dialogState() {
+      var mode = this.modeDateDialog;
+      switch (mode) {
+        case "date":
+          return this.dialogs.editDateDialog;
+          break;
+        case "time":
+          return this.dialogs.editTimeDialog;
+          break;
+        case "image":
+          return this.dialogs.editImageDialog;
+          break;
+        case "data":
+          return this.dialogs.editDetailsDialog;
+          break;
+      }
+    },
+    loading() {
+      return this.$store.getters.loading;
+    }
+  },
+  methods: {
+    openDateDialog(mode) {
+      this.modeDateDialog = mode;
+      this.switchDialogs(true);
+    },
+    closeMeetupDateDialog(mode) {
+      this.switchDialogs(false, mode);
+      this.modeDateDialog = null;
+    },
+    switchDialogs(state, currMode) {
+      var mode = currMode ||this.modeDateDialog;
+      switch (mode) {
+        case "date":
+          this.dialogs.editDateDialog = state;
+          break;
+        case "time":
+          this.dialogs.editTimeDialog = state;
+          break;
+        case "image":
+          this.dialogs.editImageDialog = state;
+          break;
+        case "data":
+          this.dialogs.editDetailsDialog = state;
+          break;
+      }
+    },
+    showButtonUpload() {
+      if (!this.userIsCreator) {
+        this.uploadButton = false;
+        return;
+      }
+      this.uploadButton = true;
+    }
+  }
+};
 </script>

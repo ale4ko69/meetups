@@ -1,72 +1,72 @@
 <template>
-<v-container>
-  <v-layout row v-if="error" >
-    <v-flex xs12 sm6 offset-sm3 mb-3>
-      <app-alert @dismissed="onDismissed" :message="error.message"></app-alert>
-    </v-flex>
-  </v-layout>
-  <v-layout row>
-    <v-flex xs12 sm6 offset-sm3>
-      <v-toolbar class="cyan">
-          <v-toolbar-title class="white--text">User Sign In</v-toolbar-title>
-      </v-toolbar> 
-      <v-card>
-        <v-card-text>
-          <v-container>
-            <form @submit.prevent="onSignin('signin')" data-vv-scope="signin">
-              <v-layout row>
-                <v-flex xs12>
-                  <v-text-field
-                  name="email"
-                  label="E-Mail"
-                  id="email"
-                  v-model="email"
-                  :error-messages="vverrors.collect('email')"
-                  v-validate="'required|email'"
-                  data-vv-name="email"
-                  data-vv-delay="500"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout row>
-                <v-flex xs12>
-                  <v-text-field
-                  name="password"
-                  label="Password"
-                  id="password"
-                  type="password"
-                  v-model="password"
-                  :error-messages="vverrors.collect('password')"
-                  v-validate="'required'"
-                  data-vv-name="password"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>  
-              <v-layout row>
-                <v-flex xs12>
-                  <v-btn 
-                  type="submit" 
-                  class="cyan"
-                  :loading="loading"
-                  :disabled="loading">
-                  Sign In</v-btn>
-                </v-flex>              
-              </v-layout>
+  <v-container >
+    <v-layout row v-if="error" >
+      <v-flex xs12 sm6 offset-sm3 mb-3>
+        <app-alert @dismissed="onDismissed" :message="error.message"></app-alert>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex xs12 sm6 offset-sm3>
+        <v-toolbar class="cyan">
+            <v-toolbar-title class="white--text">User Sign In</v-toolbar-title>
+        </v-toolbar> 
+        <v-card>
+          <v-card-text>
+            <v-container>
+              <form @submit.prevent="onSignin('signin')" data-vv-scope="signin">
+                <v-layout row>
+                  <v-flex xs12>
+                    <v-text-field
+                    name="email"
+                    label="E-Mail"
+                    id="email"
+                    v-model="email"
+                    :error-messages="vverrors.collect('email')"
+                    v-validate="'required|email'"
+                    data-vv-name="email"
+                    data-vv-delay="500"
+                    ></v-text-field>
+                  </v-flex>
+                </v-layout>
+                <v-layout row>
+                  <v-flex xs12>
+                    <v-text-field
+                    name="password"
+                    label="Password"
+                    id="password"
+                    type="password"
+                    v-model="password"
+                    :error-messages="vverrors.collect('password')"
+                    v-validate="'required'"
+                    data-vv-name="password"
+                    ></v-text-field>
+                  </v-flex>
+                </v-layout>  
+                <v-layout row>
+                  <v-flex xs12>
+                    <v-btn 
+                    type="submit" 
+                    class="cyan"
+                    :loading="loading"
+                    :disabled="loading">
+                    Sign In</v-btn>
+                  </v-flex>              
+                </v-layout>
 
-              <app-alert-dialog 
-              v-if="vShow"
-              :dlgTitle="dlgTitle"
-              :dlgMessages="dlgMessages" 
-              @closeAlertDialog="closeAlertDialog">
-              </app-alert-dialog>
+                <app-alert-dialog 
+                v-if="vShow"
+                :dlgTitle="dlgTitle"
+                :dlgMessages="dlgMessages" 
+                @closeAlertDialog="closeAlertDialog">
+                </app-alert-dialog>
 
-            </form>
-          </v-container>
-        </v-card-text>
-      </v-card>
-    </v-flex>
-  </v-layout>
-</v-container>
+              </form>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
